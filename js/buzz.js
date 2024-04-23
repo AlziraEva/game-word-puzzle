@@ -24,25 +24,25 @@
 // THE SOFTWARE.
 // ----------------------------------------------------------------------------
 
-var buzz = {
-    defaults: {
-        autoplay: false,
-        duration: 5000,
-        formats: [],
-        loop: false,
-        placeholder: '--',
-        preload: 'metadata',
-        volume: 80
+var buzz = { // objeto
+    defaults: { 
+        autoplay: false, // indica  se o audio precisa começar automaticamente após inicado
+        duration: 5000, // duração padrão para o audio
+        formats: [], // formato de audio, nenhum foi definido inicalmente
+        loop: false, // indica se o audio deve inicar automaticamente ao iniciar
+        placeholder: '--', // marcador de posição, que é indicado caso o audio não possa ser reproduzido ou carregado
+        preload: 'metadata', // indica como o audio deve ser carregado inicialmente. 'metadada' significa que apenas as informações de metadados do áudio serão carregadas.
+        volume: 80 // volume do audio
     },
-    types: {
+    types: { // mapeia as extenções de arquivos de audio para seus tipos MIME correspondentes
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg',
         'wav': 'audio/wav',
         'aac': 'audio/aac',
         'm4a': 'audio/x-m4a'
     },
-    sounds: [],
-    el: document.createElement( 'audio' ),
+    sounds: [], // serve para armazenar uma lista de audios que seram usadas posteriormente
+    el: document.createElement( 'audio' ), // uma tag <audio> é criada no index.html, sendo atribuida a propriedade el: 
     
     sound: function( src, options ) {
         var options = options || {},
