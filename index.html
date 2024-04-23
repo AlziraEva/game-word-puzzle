@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Word Puzzle Game</title>
+    <!-- links de fontes externas de CSS -->
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Permanent+Marker&v2">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:extralight,light,regular,bold&v2">
+    <!-- link de fonte interna do CSS -->
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <!-- referencia aos arquivos de JS -->
+    <script src="js/jquery.js"></script>
+    <script src="js/buzz.js"></script>
+    <script src="js/ui.jquery.js"></script>
+    <script src="js/demo.js"></script>
+</head>
+
+<body>
+    <!-- Topo da página web -->
+    <div id="header">
+        <p>Game Learning English - Word Puzzle</p>
+    </div>
+    
+    <div id="container">
+        <!-- Imagem do animal, Muda a referencia a cada mudança de página-->
+        <img id="picture" src="img/koala.png">
+        <!-- Adiciona um style com espaçamento a cada mudança de página -->
+        <ul id="models"></ul>
+        <!-- define uma lista não ordenada, não está implementada,
+        Essa nova lista - contém as palavras que iremos interagir para acertar o nome do animal-->
+        <ul id="letters"></ul>
+        <!-- Link para outra página, o 'href' não está referenciando nenhuma página -->
+        <a href="#" id="previous"><</a>  
+        <a href="#" id="next">></a>
+    </div>
+    
+    <div id="footer">
+        <p>Demo by Garmd Motion Code</a></p>
+        <!-- link para Mudar o nivel do jogo para easy ou hard, não tem nenhuma referencia no 'href' -->
+        <a href="#" id="level">easy</a>
+    </div>
+    <!-- Para caso a página não dar suporte ao som, aparecer essa mensagem -->
+    <div id="warning">
+        Your browser doesn't support<br>the HTML5 audio element.<br><a href="http://www.google.com/chrome/">Please upgrade!</a>
+    </div>
+</body>
+</html>
