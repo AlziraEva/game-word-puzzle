@@ -11,7 +11,8 @@ body {
 	color:#000;
 }
 	#warning {
-		display:none;
+		
+		display:none; /* classe ocultada */
 		position:fixed;
 		top:0;
 		left:0;

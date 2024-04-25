@@ -44,35 +44,35 @@ var buzz = { // objeto
     sounds: [], // serve para armazenar uma lista de audios que seram usadas posteriormente
     el: document.createElement( 'audio' ), // uma tag <audio> é criada no index.html, sendo atribuida a propriedade el: 
     
-    sound: function( src, options ) {
-        var options = options || {},
-            pid = 0,
-            events = [],
-            eventsOnce = {},
-            supported = buzz.isSupported();
+    sound: function( src, options ) { // 'src' representa a fonte do audio e 'options' objeto contem as opções deconfigurações 
+        var options = options || {}, // define as 'options' ou usa um objeto vazio se não tiver 'options'
+            pid = 0, // armazena o id do som
+            events = [], // armazena eventos
+            eventsOnce = {}, // armazena eventos que só acontecem uma vez
+            supported = buzz.isSupported(); // verifica se a biblioteca Buzz é suportada no ambiente
 
         // publics
-        this.load = function() {
-            if ( !supported ) return this;
+        this.load = function() { // está sendo criada uma função chamada 'load()' vinculada ao objeto atual
+            if ( !supported ) return this; // verifica se a biblioteca Buzz é suportada
 
-            this.sound.load();
+            this.sound.load(); // carrega o som usando o método load()
             return this;
         }
         
-        this.play = function() {
+        this.play = function() { // está sendo criada uma função chamada 'play()' vinculada ao objeto atual
             if ( !supported ) return this;
 
-            this.sound.play();
+            this.sound.play(); // reproduz o som
             return this;
         }
         
-        this.togglePlay = function() {
+        this.togglePlay = function() { // está sendo criada uma função chamada 'togglePlay()' vinculada ao objeto atual, é usada para alternar entre reproduzir e pousar o som
             if ( !supported ) return this;
             
-            if ( this.sound.paused ) {
-                this.sound.play();
-            } else {
-                this.sound.pause();
+            if ( this.sound.paused ) { // se o som estiver pausado 
+                this.sound.play(); // ira reproduzir
+            } else { // se estiver reproduzindo
+                this.sound.pause(); // ira pausar
             }
             return this;
         }
@@ -80,37 +80,38 @@ var buzz = { // objeto
         this.pause = function() {
             if ( !supported ) return this;
 
-            this.sound.pause();
+            this.sound.pause(); // pausa o som
             return this;
         }
         
         this.isPaused = function() {
             if ( !supported ) return null;
 
-            return this.sound.paused;
+            return this.sound.paused; // retorna o estado de pausa do som, true (som pausado) ou false (som reproduzindo)
         }
         
         this.stop = function() {
             if ( !supported  ) return this;
             
-            this.setTime( this.getDuration() );
-            this.sound.pause();
+            this.setTime( this.getDuration() ); // define o tempo de reprodução para o fim da duração do audio, movendo o cursor de reprodução para o fim da faixa
+            this.sound.pause(); // pausa a reprodução do som
             return this;
         }
         
         this.isEnded = function() {
             if ( !supported ) return null;
 
-            return this.sound.ended;
+            return this.sound.ended; // retorna o estado de finalização do som, true (se o som tiver sido reproduzido até o final) ou false (caso contrário)
         }
         
         this.loop = function() {
             if ( !supported ) return this;
             
-            this.sound.loop = 'loop';
-            this.bind( 'ended.buzzloop', function() {
-                this.currentTime = 0;
-                this.play();
+            this.sound.loop = 'loop'; // faz com que o audio seja repetido continuamente
+            this.bind( 'ended.buzzloop', // associa um evento de escuta ao objeto, é acionado quando o som termina de ser reproduzido
+            function() {  
+                this.currentTime = 0; // redefine o tempo de reprodução para o inicio
+                this.play(); // reproduz novamente o som
             });
             return this;
         }
@@ -118,36 +119,36 @@ var buzz = { // objeto
         this.unloop = function() {
             if ( !supported ) return this;
             
-            this.sound.removeAttribute( 'loop' );
-            this.unbind( 'ended.buzzloop' );
+            this.sound.removeAttribute( 'loop' ); // impede que o audio seja reproduzido em loop
+            this.unbind( 'ended.buzzloop' ); // remove o evento de escuta ao termino da música
             return this;
         }
         
         this.mute = function() {
             if ( !supported ) return this;
             
-            this.sound.muted = true;
+            this.sound.muted = true; // o som não será reproduzido, ainda que possa se carregado
             return this;
         }
         
         this.unmute = function() {
             if ( !supported ) return this;
             
-            this.sound.muted = false;
+            this.sound.muted = false; // desativa o modo muda, permitindo que o som seja reproduzido
             return this;
         }
         
         this.toggleMute = function() {
             if ( !supported ) return this;
 
-            this.sound.muted = !this.sound.muted;
+            this.sound.muted = !this.sound.muted; // altera o estado mudo do som, e estiver ativado(desativa), e se estiver desativado(ativa)
             return this;
         }
         
         this.isMuted = function() {
             if ( !supported ) return null;
 
-            return this.sound.muted;
+            return this.sound.muted; // estado de mudo do som, se mudo (true), caso contrario false
         }
         
         this.setVolume = function( volume ) {
@@ -155,29 +156,29 @@ var buzz = { // objeto
 
             if ( volume < 0 ) volume = 0;
             if ( volume > 100 ) volume = 100;
-            this.volume = volume;
-            this.sound.volume = volume / 100;
+            this.volume = volume; // passa o valor do parametro volume é associado ao valor do volume do objeto
+            this.sound.volume = volume / 100; // valor do voluma é passado para o objeto volume do 'sound' e convertido para a escala 0 a 1
             return this;
         },
         this.getVolume = function() {
             if ( !supported ) return this;
 
-            return this.volume;
+            return this.volume; // retorna o valor do volume
         }
         
-        this.increaseVolume = function( value ) {
-            return this.setVolume( this.volume + ( value || 1 ) );
+        this.increaseVolume = function( value ) { // aumenta o volume do som, se nenhum valor for passado será '1' por padrão
+            return this.setVolume( this.volume + ( value || 1 ) ); // chama o metodo setVolume() passa o argumento this.volume e incrementa  o value, caso não tenha nenhum valor no value, será '1'.
         }
         
-        this.decreaseVolume = function( value ) {
-            return this.setVolume( this.volume - ( value || 1 ) );
+        this.decreaseVolume = function( value ) { // diminui o volume do som
+            return this.setVolume( this.volume - ( value || 1 ) ); // decrementa -value ou -1 como argumento do metodo setValue()
         }
         
         this.setTime = function( time ) {
             if ( !supported ) return this;
             
-            this.whenReady( function() {
-                this.sound.currentTime = time;
+            this.whenReady( function() { // aguarda até que o som esteja pronto para ser manipulado abtes de executar o código que está dentro dele
+                this.sound.currentTime = time; // define o tempo de reprodução do som de acordo com o 'time'
             });
             return this;
         }
@@ -185,8 +186,8 @@ var buzz = { // objeto
         this.getTime = function() {
             if ( !supported ) return null;
 
-            var time = Math.round( this.sound.currentTime * 100 ) / 100;
-            return isNaN( time ) ? buzz.defaults.placeholder : time;
+            var time = Math.round( this.sound.currentTime * 100 ) / 100; // calcula o tempo atual de reprodução do som associado
+            return isNaN( time ) ? buzz.defaults.placeholder : time; // é verificado se o tempo calculado é um número válido
         }
         
         this.setPercent = function( percent ) {
@@ -314,21 +315,21 @@ var buzz = { // objeto
         this.set = function( key, value ) {
             if ( !supported ) return this;
 
-            this.sound[ key ] = value;
+            this.sound[ key ] = value; // permite que chame vários metodos consecutivos no objeto 
             return this;
         }
         
         this.get = function( key ) {
             if ( !supported ) return null;
 
-            return key ? this.sound[ key ] : this.sound;
+            return key ? this.sound[ key ] : this.sound; // verifica se foi possada uma chave key, se sim é acessado esse valor no objeto
         }
         
         this.bind = function( types, func ) {
             if ( !supported ) return this;
 
             var that = this,
-                types = types.split( ' ' ),
+                types = types.split( ' ' ), // divide os tipos de eventos fornecidos em uma string e armazenando em um array
 				efunc = function( e ) { func.call( that, e ) };
             
             for( var t in types ) {
@@ -487,7 +488,7 @@ var buzz = { // objeto
             return filename.split('.').pop();
         }
         
-        function addSource( sound, src ) {
+        function addSource( sound, src ) { // cria uma tag de audio no html
             var source = document.createElement( 'source' );
             source.src = src;
             if ( buzz.types[ getExt( src ) ] ) {
