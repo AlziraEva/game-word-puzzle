@@ -1,8 +1,10 @@
-buzz.defaults.formats = [ 'ogg', 'mp3' ]; // define os formatos de arquivos de audio que a biblioteca buzz tentará carregar nessa ordem.
-buzz.defaults.preload = 'metadata'; // define que apenas os arquivos de audio devem ser carregados quando a página é carregada, mas o conteúdo do audio só deve  ser executado até ser solicitado pelo usuario (clicando em um botão)
+// Configurações padrão para a biblioteca Buzz.js
+buzz.defaults.formats = ['ogg', 'mp3']; 
+buzz.defaults.preload = 'metadata'; 
 
-var games = [ // contém informações sobre os animais do jogo
-    { img: 'img/koala.png', color:'#176580', word: 'koala', sound: '' }, // informações sobre cada animal
+// Informações sobre os animais do jogo
+var games = [ 
+    { img: 'img/koala.png', color:'#176580', word: 'koala', sound: '' }, 
     { img: 'img/elephant1.png', color:'#a36513', word: 'elephant', sound: 'sounds/elephant' },
     { img: 'img/monkey.png', color:'#ffc48b', word: 'monkey', sound: 'sounds/monkey' },
     { img: 'img/bear.png', color:'#807148', word: 'bear', sound: 'sounds/bear' },
@@ -25,59 +27,80 @@ var games = [ // contém informações sobre os animais do jogo
     
 ];
 
-var winSound        = new buzz.sound('sounds/win' ), // instancia em que é associado o som da vitoria 
-    errorSound      = new buzz.sound('sounds/error' ), // instancia que é associado o som da derrota
-    alphabetSounds  = {}, // ira armazenar os sons associados a cada letra do alfabeto
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'.split( '' ); // irá retornar um array contendo as letras do alfabeto
-
-for( var i in alphabet ) {
-    var letter = alphabet[ i ];
-    alphabetSounds[ letter ] = new buzz.sound('sounds/kid/'+ letter ); // um novo objeto de som é criado para cada letra do alfabeto, e sendo armazenado no objeto 'alphabetSounds '
+// Função para criar instâncias de som
+function createSound(src) {
+    return new buzz.sound(src);
 }
 
-$( function() { // é usado para garantir que o código dentro da função será executado, somente após o documento html ser todo carregado
-    if ( !buzz.isSupported() ) { // verifica se a biblioteca 'Buzz' é suportada pelo navegador
-        $('#warning').show(); // caso a biblioteca não seja suportada irá exibir o elemento 'html da tag com id='#warning', a função show() irá  exibir os elemento ocultos.
+// Sons associados a cada letra do alfabeto
+const alphabetSounds = {};
+
+// Letras do alfabeto
+const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+
+// Associar sons a cada letra do alfabeto
+alphabet.forEach(letter => {
+    alphabetSounds[letter] = createSound(`sounds/kid/${letter}`);
+});
+
+// Instâncias de som para vitória e erro
+const winSound = createSound('sounds/win');
+const errorSound = createSound('sounds/error');
+
+$(function() {
+    // Verifica se a biblioteca 'Buzz' é suportada pelo navegador
+    if (!buzz.isSupported()) {
+        $('#warning').show(); // Exibe o elemento com id='warning'
     }
 
+    // idx ainda precisa ser definido para o restante do código
     var idx = 0,
-        $container  = $( '#container' ), // seleciona o elemento html e o armazena na váriavel
+        // Seleciona os elementos HTML e armazena-os em variáveis
+        $container  = $( '#container' ), 
         $picture    = $( '#picture' ),
         $models     = $( '#models' ),
-        $letters    = $( '#letters' );
+        $letters    = $( '#letters' ),
+        $body       = $( 'body' ),
+        $next       = $( '#next' ),
+        $previus    = $( '#previous' ),
+        $level      = $('#level')
+        $header     = $('#header')
 
-    $( 'body' ).bind('selectstart', function() { // seleciona o elemento 'body' do 'html', vincula o evento 'selectstart' a esse elemento, o 'selectstart' é acionado quando o usuario inicia a seleção de texto no elemento.
-        return false // quando o usuario iniciar a seleção de texto o evento 'selectstart' é cancelado e a seleção de texto não é permitida
-    });
 
-    $( '#next' ).click( function() {
-        refreshGame();
-        buildGame( ++idx ); // construção do jogo de acordo com seu idx(incrementa +1 no idx) idx(numero da página)
+    // Impede a seleção de texto no corpo do documento
+    $body.on('selectstart', function() {
         return false;
     });
 
-    $( '#previous' ).click( function() {
+    // Atualiza o jogo e avança para o próximo índice
+    $next.click(function() {
+        buildGame(++idx);
+        return false; // bloqueia a ação padrão do link
+    });
+
+    // Atualiza o jogo e retrocede para o índice anterior
+    $previus.click( function() {
        refreshGame();
-       buildGame( --idx ); // construção do jogo de acordo com seu idx(decrementa -1 no idx)
+       buildGame( --idx ); 
        return false;
     });
 
-    $( '#level' ).click( function() {
-        if ( $( this ).text() == 'easy' ) {
-            $( this ).text( 'hard' );
-            $models.addClass( 'hard' ); // adiciona ao css a classe 'hard fazendo com que as letras desaparesa
-        } else {
-            $( this ).text( 'easy' );
-            $models.removeClass( 'hard' ); // remove a classe 'hard' do css - fazendo com que as letras voltem a aparecer
-        }
+    // Alterna entre os níveis de dificuldade
+    $level.click(function() {
+        var $this = $(this);
+        var newText = $this.text() === 'easy' ? 'hard' : 'easy';
+        $this.text(newText);
+        $models.toggleClass('hard');
         return false;
     });
 
+    // limpa toda as alterações da página anterior
     function refreshGame() {
-        $( '#models' ).html( '' ); // limpa toda as alterações da página anterior
-        $( '#letters' ).html( '' );
+        $models.html( '' ); 
+        $letters.html( '' );
     }
 
+    // Construção do jogo
     function buildGame( x ) {
         if ( x > games.length - 1 ) { // caso o número da página for maior do que o total dos itens do objeto 'Games'
             idx = 0; // volta para a página inicial 
@@ -190,6 +213,7 @@ $( function() { // é usado para garantir que o código dentro da função será
             }
         });
     }
+
 
     function winGame() { // será chamada quando o jogador ganhar o jogo
         winSound.play(); // audio que contem a vitoria
