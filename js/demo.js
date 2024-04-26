@@ -60,7 +60,7 @@ $(function() {
         $picture    = $( '#picture' ),
         $models     = $( '#models' ),
         $letters    = $( '#letters' ),
-        $body       = $( '#body' ),
+        $body       = $( 'body' ),
         $next       = $( '#next' ),
         $previus    = $( '#previous' ),
         $level      = $('#level')
