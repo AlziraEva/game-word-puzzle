@@ -60,7 +60,7 @@ $(function() {
         $picture    = $( '#picture' ),
         $models     = $( '#models' ),
         $letters    = $( '#letters' ),
-        $body       = $( 'body' ),
+        $body       = $( '#body' ),
         $next       = $( '#next' ),
         $previus    = $( '#previous' ),
         $level      = $('#level')
@@ -74,6 +74,7 @@ $(function() {
 
     // Atualiza o jogo e avança para o próximo índice
     $next.click(function() {
+        refreshGame()
         buildGame(++idx);
         return false; // bloqueia a ação padrão do link
     });
@@ -146,7 +147,7 @@ $(function() {
         // Build shuffled letters
         var letters  = game.word.split( '' ), // separa cada letra do nome do animal
             shuffled = letters.sort( function() { return Math.random() < 0.5 ? -1 : 1 }); // o sort() é usado para ordenar elementos de um array
-            // Math.random()  retorna um elemento número aleatorio de 0 a 1, como resultado ira embaralhar as letras do nome.
+             Math.random()  //retorna um elemento número aleatorio de 0 a 1, como resultado ira embaralhar as letras do nome.
 
         for( var i in shuffled ) {
             $letters.append( '<li class="draggable">' + shuffled[ i ] + '</li>' ); // adiciona a tag 'li' com a letra do nome do animal de forma aleatoria
