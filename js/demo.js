@@ -101,50 +101,48 @@ $(function() {
         $letters.html( '' );
     }
 
+    
+
     // Construção do jogo
     function buildGame( x ) {
-        if ( x > games.length - 1 ) { // caso o número da página for maior do que o total dos itens do objeto 'Games'
-            idx = 0; // volta para a página inicial 
+
+
+        if ( x > games.length - 1 ) { 
+            idx = 0; 
         }
-        if ( x < 0 ) { // caso o idx for menor do que 0
-            idx = games.length - 1; // volta para a ultima página
-        }
-
-        var game  = games[ idx ], // atribui o valor de só uma lista do objeto 'GAMES'
-            score = 0;
-
-        var gameSound = new buzz.sound( game.sound ); // pega a propriedade sound da lista que foi selecionada
-        gameSound.play(); // utiliza o método play() da biblioteca buzz
-
-        // Fade the background color
-        $( 'body' ).stop().animate({
-            backgroundColor: game.color // a cor da página será igual a cor passada da lista do 'Games'
-        }, 1000);
-        $( '#header' ).stop().animate({ //retirado o 'a' pois não tinha nada no html em relação a essa tag
-            color: game.color // Muda a cor do texto de acordo com a lista do 'games'
-        }, 1000);
-
-        // Update the picture
-        $picture.attr( 'src', game.img ) // está definindo o atributo src com uma nova imagem
-            .unbind( 'click' ) // remove qualquer manipulador de evento 'clique'
-            .bind( 'click', function() { // associa um novo manipulador de eventos 'clique',
-                gameSound.play(); // quando esse elemento é clicado, ele inicia o som associado a imagem selecionada.
-            });
-
-        // Build model
-        var modelLetters = game.word.split( '' ); // pega o nome do animal e separa de acordo com o espaço entre as letras
-
-        for( var i in modelLetters ) { // é realizado um loop pegando cada letra do nome do animal
-            var letter = modelLetters[ i ]; // é passada para variavel 'letter' casa letra do nome do animal
-            $models.append( '<li>' + letter + '</li>' ); // adiciona um elemento (uma letra) do nome do animal a lista
+        if ( x < 0 ) {
+            idx = games.length - 1; 
         }
 
-        var letterWidth = $models.find( 'li' ).outerWidth( true ); // com o find('li') procura todos os elementos li dentro do 'models'
-        // o outerWidth( true ) retorna a largura total do elemento
+        var game  = games[ idx ],
+            score = 0; 
+    
+        // reproduzir jogo
+        playGameSound(game)
+        // atualizar cor da imagem
+        updateBackgroundColor(game.color)
+       // atualizar a cor do cabeçalho
+        updateHeaderColor(game.color)
+       // atualizar a imagem do jogo
+        updatePicture(game)
+      
 
-        $models.width( letterWidth * $models.find( 'li' ).length ); //width é usado para definir a largura do elemento, ( multiplica-se a largura de cada item 'li' pelo número total de itens. )
+        // Função para construit os modelos das letras
+    
+        var modelLetters = game.word.split( '' ); 
+    
+        for( var i in modelLetters ) { 
+            var letter = modelLetters[ i ]; 
+            $models.append( '<li>' + letter + '</li>' ); 
+        }
+    
+        var letterWidth = $models.find( 'li' ).outerWidth( true ); 
+    
+        $models.width( letterWidth * $models.find( 'li' ).length );
 
-        // Build shuffled letters
+//--------------------------------------------------------------------------------
+        // Função para construir as letras embaralhadas
+
         var letters  = game.word.split( '' ), // separa cada letra do nome do animal
             shuffled = letters.sort( function() { return Math.random() < 0.5 ? -1 : 1 }); // o sort() é usado para ordenar elementos de um array
              Math.random()  //retorna um elemento número aleatorio de 0 a 1, como resultado ira embaralhar as letras do nome.
@@ -182,6 +180,9 @@ $(function() {
             stack: '#letters li' // especifica que os elementos arrastaveis empilham-se sobre outros elementos, ficando ele no topo da pilha
         });
 
+//----------------------------------------------------------------------------
+        // Função para tornar as letras droppable (soltáveis)
+
         $models.find( 'li' ).droppable( { // comportamento de soltar elementos
             accept:     '.draggable', // elementos <li> serão alvos de soltura apenas de elementos da classe '.draggable'.
             hoverClass: 'hover', // define uma classe css chamada 'hover', e quando um elemento estiver sendo arrastrado ele será estilizado visualmente.
@@ -215,7 +216,36 @@ $(function() {
         });
     }
 
+     // Função para reproduzir o som do jogo
+     function playGameSound(game){
+        var gameSound = createSound( game.sound ); 
+        return gameSound.play();
+    }
 
+    // Função para atualizar a cor de fundo
+    function updateBackgroundColor(color){
+        $body.stop().animate({
+            backgroundColor: color 
+        }, 1000);  
+    }
+
+    // Função para atualizar a cor do cabeçalho
+    function updateHeaderColor(color) {
+    $header.stop().animate({ 
+        color: color 
+    }, 1000);
+}
+
+    // função para atualizar a imagem do jogo
+    function updatePicture(game){
+    $picture.attr( 'src', game.img ) 
+    .unbind( 'click' ) 
+    .bind( 'click', function() { 
+        playGameSound(game); 
+    });
+}
+
+  
     function winGame() { // será chamada quando o jogador ganhar o jogo
         winSound.play(); // audio que contem a vitoria
 
