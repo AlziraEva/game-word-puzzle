@@ -67,26 +67,26 @@ $(function() {
         $header     = $('#header')
 
 
-    // Impede a seleção de texto no corpo do documento
+    //* Impede a seleção de texto no corpo do documento
     $body.on('selectstart', function() {
         return false;
     });
 
-    // Atualiza o jogo e avança para o próximo índice
+    //* Atualiza o jogo e avança para o próximo índice
     $next.click(function() {
         refreshGame()
         buildGame(++idx);
         return false; // bloqueia a ação padrão do link
     });
 
-    // Atualiza o jogo e retrocede para o índice anterior
+    //* Atualiza o jogo e retrocede para o índice anterior
     $previus.click( function() {
        refreshGame();
        buildGame( --idx ); 
        return false;
     });
 
-    // Alterna entre os níveis de dificuldade
+    //* Alterna entre os níveis de dificuldade
     $level.click(function() {
         var $this = $(this);
         var newText = $this.text() === 'easy' ? 'hard' : 'easy';
@@ -95,17 +95,14 @@ $(function() {
         return false;
     });
 
-    // limpa toda as alterações da página anterior
+    //* limpa toda as alterações da página anterior
     function refreshGame() {
         $models.html( '' ); 
         $letters.html( '' );
     }
 
-    
-
-    // Construção do jogo
+    //! Construção do jogo
     function buildGame( x ) {
-
 
         if ( x > games.length - 1 ) { 
             idx = 0; 
@@ -116,20 +113,60 @@ $(function() {
 
         var game  = games[ idx ],
             score = 0; 
-    
+
+     var modelLetters = game.word.split( '' );
+       
         // reproduzir jogo
         playGameSound(game)
         // atualizar cor da imagem
         updateBackgroundColor(game.color)
-       // atualizar a cor do cabeçalho
+        // atualizar a cor do cabeçalho
         updateHeaderColor(game.color)
-       // atualizar a imagem do jogo
+        // atualizar a imagem do jogo
         updatePicture(game)
-      
+        // construir os modelos das letras
+        BuildTemplateLettering(game.word)
+        // construir as letras embaralhadas
+        BuildScrambledLetters(modelLetters)
+        // tornar as letras droppable(soltáveis)
+        BuildDropdownLetters(score, modelLetters)
+              
+}
 
-        // Função para construit os modelos das letras
-    
-        var modelLetters = game.word.split( '' ); 
+//-----------------------------------------------------------------------------------
+
+     //! Função para reproduzir o som do jogo
+     function playGameSound(game){
+        var gameSound = createSound( game.sound ); 
+        return gameSound.play();
+    }
+
+    //! Função para atualizar a cor de fundo
+    function updateBackgroundColor(color){
+        $body.stop().animate({
+            backgroundColor: color 
+        }, 1000);  
+    }
+
+    //! Função para atualizar a cor do cabeçalho
+    function updateHeaderColor(color) {
+        $header.stop().animate({ 
+        color: color 
+    }, 1000);
+}
+
+    //! Função para atualizar a imagem do jogo
+    function updatePicture(game){
+        $picture.attr( 'src', game.img ) 
+        .unbind( 'click' ) 
+        .bind( 'click', function() { 
+        playGameSound(game); 
+    });
+}
+
+    //! Função para construir os modelos das letras
+    function BuildTemplateLettering(game){
+        var modelLetters = game.split( '' ); 
     
         for( var i in modelLetters ) { 
             var letter = modelLetters[ i ]; 
@@ -139,136 +176,138 @@ $(function() {
         var letterWidth = $models.find( 'li' ).outerWidth( true ); 
     
         $models.width( letterWidth * $models.find( 'li' ).length );
+    }
 
-//--------------------------------------------------------------------------------
-        // Função para construir as letras embaralhadas
+     //! Função para construir as letras embaralhadas
+     function BuildScrambledLetters(modelLetters){
+        var letterWidth = $models.find( 'li' ).outerWidth( true );
 
-        var letters  = game.word.split( '' ), // separa cada letra do nome do animal
-            shuffled = letters.sort( function() { return Math.random() < 0.5 ? -1 : 1 }); // o sort() é usado para ordenar elementos de um array
-             Math.random()  //retorna um elemento número aleatorio de 0 a 1, como resultado ira embaralhar as letras do nome.
+        var shuffled = modelLetters.sort( function() { return Math.random() < 0.5 ? -1 : 1 }); 
+        Math.random();  
 
         for( var i in shuffled ) {
-            $letters.append( '<li class="draggable">' + shuffled[ i ] + '</li>' ); // adiciona a tag 'li' com a letra do nome do animal de forma aleatoria
-        }
+            $letters.append( '<li class="draggable">' + shuffled[ i ] + '</li>' ); 
+        };
 
-        $letters.find( 'li' ).each( function( i ) { // processo para percorrer cada elemento '<li>' e executar uma funcao para cada um deles
-            var top   = ( $models.position().top ) + ( Math.random() * 100 ) + 80, //  position() - retorna a posição do primeiro elemento.
-            // é indicada uma posição aleatoria ao elemento
-                left  = ( $models.offset(). left - $container.offset().left ) + ( Math.random() * 20 ) + ( i * letterWidth ),
-                // Calcula a posição horizontal do elemento 'models' em relação ao 'container, levando em consideração o deslocamento aleatorio  com base na largura da letra
+        $letters.find( 'li' ).each( function( i ) { 
+         // retorna a posição do primeiro elemento e indicada uma posição aleatoria 
+        var top   = ( $models.position().top ) + ( Math.random() * 100 ) + 80,  
+            left  = ( $models.offset(). left - $container.offset().left ) + ( Math.random() * 20 ) + ( i * letterWidth ),
+            angle = ( Math.random() * 30 ) - 10; 
 
-                angle = ( Math.random() * 30 ) - 10; // define o angulo para girar ou inclinar o elemento na tela
-            $( this ).css({
-                top:  top  + 'px',
-                left: left + 'px'
-            });
-
-            rotate( this, angle );
-
-            $( this ).mousedown( function() {
-                // evento de clicar no mouse 
-                var letter = $( this ).text(); // obtem o texto do elemento atual
-                if ( alphabetSounds[ letter ] ) // se ouver um som associado ao texto
-                {
-                    alphabetSounds[ letter ].play(); // o som associado é chamado para ser reproduzido
-                } 
-            });
+        $( this ).css({
+            top:  top  + 'px',
+            left: left + 'px'
         });
 
-        $letters.find( 'li.draggable' ).draggable({ // seleciona todos os elementos 'li' com a classe = 'draggable' e com 'draggable()' os torna arrastaveis.
-            zIndex: 9999, // garante que os elementos arratais fiquem acima dos outros elementos '<li>'
-            stack: '#letters li' // especifica que os elementos arrastaveis empilham-se sobre outros elementos, ficando ele no topo da pilha
+        rotate( this, angle );
+
+        // evento de clicar no mouse 
+        $( this ).mousedown( function() {
+            var letter = $( this ).text(); 
+            if ( alphabetSounds[ letter ] )
+                alphabetSounds[ letter ].play(); 
+
         });
-
-//----------------------------------------------------------------------------
-        // Função para tornar as letras droppable (soltáveis)
-
-        $models.find( 'li' ).droppable( { // comportamento de soltar elementos
-            accept:     '.draggable', // elementos <li> serão alvos de soltura apenas de elementos da classe '.draggable'.
-            hoverClass: 'hover', // define uma classe css chamada 'hover', e quando um elemento estiver sendo arrastrado ele será estilizado visualmente.
-            drop: function( e, ui ) {
-                var modelLetter      = $( this ).text(), // obtem um texto de onde o elemento arrastavel foi solto
-                    droppedLetter = ui.helper.text(); // obtem o texto do elemento que está sendo solto
-
-                if ( modelLetter == droppedLetter ) { // verifica se o modelLetter é igual ao elemento arrastavel que foi aolto (droppedLetter)
-                    ui.draggable.animate( { // anima o elemento arrastavel
-                        top:     $( this ).position().top,
-                        left:     $( this ).position().left // define que o elemento que foi solto tem que está na mesma posição do elemento onde ele foi solto
-                    } ).removeClass( 'draggable' ).draggable( 'option', 'disabled', true ); // remove e desabilidade a funcionalidade de arrastar o elemento
-                    
-                    rotate( ui.draggable, 0 );
-                    
-                    score++;
-                    
-                    if ( score == modelLetters.length ) {
-                        winGame(); // se completar as letras, ele vence o jogo
-                    }    
-                } else {
-                    ui.draggable.draggable( 'option', 'revert', true ); // faz a letra voltar para sua posição inical antes de ser arrastrada
-                    
-                    errorSound.play(); // som de erro é acionado
-                    
-                    setTimeout( function() {
-                        ui.draggable.draggable( 'option', 'revert', false ); // define que após o elemento ser solto, ele não volta para sua posição inicial
-                    }, 100 );
-                }
-            }
-        });
-    }
-
-     // Função para reproduzir o som do jogo
-     function playGameSound(game){
-        var gameSound = createSound( game.sound ); 
-        return gameSound.play();
-    }
-
-    // Função para atualizar a cor de fundo
-    function updateBackgroundColor(color){
-        $body.stop().animate({
-            backgroundColor: color 
-        }, 1000);  
-    }
-
-    // Função para atualizar a cor do cabeçalho
-    function updateHeaderColor(color) {
-    $header.stop().animate({ 
-        color: color 
-    }, 1000);
-}
-
-    // função para atualizar a imagem do jogo
-    function updatePicture(game){
-    $picture.attr( 'src', game.img ) 
-    .unbind( 'click' ) 
-    .bind( 'click', function() { 
-        playGameSound(game); 
     });
 }
 
-  
-    function winGame() { // será chamada quando o jogador ganhar o jogo
-        winSound.play(); // audio que contem a vitoria
+//------------------------------------------------------------------------
 
+    //! Função para tornar as letras droppable (soltáveis)
+    function BuildDropdownLetters(score, modelLetters){
+        // seleciona todos os elementos 'li.draggable' os torna arrastaveis.
+        $letters.find( 'li.draggable' ).draggable({ 
+            // garante que os elementos fiquem acima dos outros 
+            zIndex: 9999, 
+            stack: '#letters li' 
+        });
+        
+        // 0 elemento se torna uma área onde outros elementos podem ser soltos
+        $models.find( 'li' ).droppable( { 
+            // especifica a classe CSS
+            accept: '.draggable', 
+            hoverClass: 'hover', 
+            // é executada quando o elemento arrastavel é solto
+            drop: function( e, ui ) {
+                var modelLetter   = $( this ).text(), // área do elemento solto
+                    droppedLetter = ui.helper.text(); // elemento solto
+
+        if ( modelLetter == droppedLetter ) { 
+            // anima o elemento arrastavel
+            ui.draggable.animate( { 
+                // elemento solto fica na mesma posição da área
+                top:     $( this ).position().top,
+                left:     $( this ).position().left 
+                // remove e desabilidade a funcionalidade de arrastar o elemento
+            } ).removeClass( 'draggable' ).draggable( 'option', 'disabled', true ).css({
+                boxShadow: '0px 0px 10px 5px rgba(0,0,0,0.7)', 
+                textShadow: '4px 4px 8px rgba(255,255,255,0.7)',
+                background: 'hsl(120, 100%, 50%)', 
+            }); 
+            
+            rotate( ui.draggable, 0 );
+            
+            score++;
+            
+            // se completar as letras, ele vence o jogo
+            if ( score == modelLetters.length ) {
+                winGame(); 
+            }    
+        } else {
+
+            ui.draggable.css({
+                background:'red'
+
+        })
+            // a letra volta para sua posição inical após ser solto
+            ui.draggable.draggable( 'option', 'revert', true ); 
+
+            errorSound.play();
+
+            setTimeout( function() {
+                // desativado o recuo para a posição inicial e permanecer onde foi solto
+                ui.draggable.draggable( 'option', 'revert', false );
+            }, 100 );
+        }
+    }
+});
+}
+
+// --------------------------------------------------------------------------------
+
+    //! Quando o jogador ganhar o jogo
+    function winGame() { 
+
+        winSound.play(); 
+
+           // seleciona todos os elementos li e executa uma função para cada elemento
         $( '#letters li' ).each( function( i ) 
-        // seleciona todos os elementos li e executa uma função para cada elemento, o parametro (i) é o indice de cada elemento
-        {
-            var $$ = $( this ); // cria uma variavel local que armazena uma referencia ao elemento 'li' atual
+        {   // cria uma variavel local que armazena uma referencia ao elemento 'li' atual
+            var $$ = $( this ); 
             setTimeout( function() {
                 $$.animate({
-                    top:'+=60px' // cada letra do bixinho se move para baixo
+                    // cada letra se move para baixo
+                    top:'+=60px' 
                 });
-            }, i * 300 ); // cada item vai se mover com atraso em relação ao anterior
+            // cada item vai se move com atraso em relação ao anterior
+            }, i * 300 ); 
         });
 
+        // atualiza ou reinicia o jogo
         setTimeout( function() {
-            refreshGame(); // atualiza ou reinicia o jogo
-            buildGame( ++idx ); // construir e preparar o proximo jogo
+            refreshGame(); 
+            // construir e preparar o proximo jogo
+            buildGame( ++idx ); 
         }, 3000);
     }
 
-    function rotate( el, angle ) { // define 2 elementos - o html a ser rotacionado('el') e o angulo da rotação('angle)
-        $( el ).css({ // seleciona o elemento 'el' e define a propriedade de estilo CSS
-            '-webkit-transform': 'rotate(' + angle + 'deg)', // tipos dos navegadores que poderão ser suportados
+    //! o html a ser rotacionado('el') e o angulo da rotação('angle)
+    function rotate( el, angle ) { 
+
+        $( el ).css({ 
+            // tipos dos navegadores que poderão ser suportados
+            '-webkit-transform': 'rotate(' + angle + 'deg)', 
             '-moz-transform': 'rotate(' + angle + 'deg)', 
             '-ms-transform': 'rotate(' + angle + 'deg)',
             '-o-transform': 'rotate(' + angle + 'deg)',
@@ -276,5 +315,6 @@ $(function() {
         });
     }
 
-    buildGame( idx ); // construir novo jogo de acordo com esse 'idx'
+    //! construir novo jogo de acordo com esse 'idx'
+    buildGame( idx ); 
 });
