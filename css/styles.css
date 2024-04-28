@@ -111,9 +111,12 @@ body {
 		color:#000;
 		color:rgba( 0, 0, 0, 0.7 );
 	}
-	#models.hard li {
+	#models.hard li{
 		color:rgba( 0, 0, 0, 0 );
 	}
+	/* #models.hardest li{
+		color:rgba( 0, 0, 0, 0 );
+	} */
 	#models li.hover {
 		background:#000;
 		background:rgba( 0, 0, 0, 0.2 );
@@ -190,3 +193,28 @@ body {
 	.bsa_it_p {
 		display:none;
 	}
+
+/* Estilo para o botão de reinício */
+#reset {
+    font-family: 'Permanent Marker', cursive; /* Usa a mesma fonte que os outros elementos */
+    font-size: 15px; /* Tamanho da fonte */
+    background-color: lightsalmon; /* Cor de fundo */
+    color: white; /* Cor do texto */
+    border: none; /* Remove a borda */
+    padding: 6px 15px; /* Espaçamento interno */
+    text-align: center; /* Alinhamento do texto */
+    text-decoration: none; /* Remove decoração de texto */
+    display: inline-block; /* Mostra como um elemento de bloco */
+    margin: 8px 15px; /* Margem externa */
+    cursor: pointer; /* Altera o cursor para indicar interatividade */
+    border-radius: 8px; /* Borda arredondada */
+    transition-duration: 0.4s; /* Duração da transição de hover */
+}
+
+/* Estilo para o hover do botão */
+#reset:hover {
+    background-color: white; /* Cor do texto */
+	color:lightsalmon;
+}
+
+	
