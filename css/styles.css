@@ -194,6 +194,8 @@ body {
 		display:none;
 	}
 
+
+	/* todo: INCLUIDO */
 /* Estilo para o botão de reinício */
 #reset {
     font-family: 'Permanent Marker', cursive; /* Usa a mesma fonte que os outros elementos */
@@ -211,6 +213,7 @@ body {
     transition-duration: 0.4s; /* Duração da transição de hover */
 }
 
+	/* todo: INCLUIDO */
 /* Estilo para o hover do botão */
 #reset:hover {
     background-color: white; /* Cor do texto */

@@ -3,9 +3,10 @@ buzz.defaults.formats = ['ogg', 'mp3'];
 buzz.defaults.preload = 'metadata'; 
 
 
-// Função para criar instâncias de som
+// Função para criar instâncias de som 
+//todo: alterado para ser reutilizavel
 function createSound(src) {
-    return new buzz.sound(src);
+    return new buzz.sound(src); 
 }
 
 // Sons associados a cada letra do alfabeto
@@ -32,6 +33,7 @@ $(function() {
     // idx ainda precisa ser definido para o restante do código
     var idx = 0,
         // Seleciona os elementos HTML e armazena-os em variáveis
+        //todo: Alterado - incluir tudo em variaveis
         $container  = $( '#container' ), 
         $picture    = $( '#picture' ),
         $models     = $( '#models' ),
@@ -92,6 +94,7 @@ $(function() {
 
      var modelLetters = game.word.split( '' );
        
+      //todo: Alterado - Dividir as responsabilidades em funções menores.
         // reproduzir jogo
         playGameSound(game)
         // atualizar cor da imagem
@@ -111,12 +114,14 @@ $(function() {
 
 //-----------------------------------------------------------------------------------
 
+     //todo: Alterado - Função com responsabilidade especifica
      //! Função para reproduzir o som do jogo
      function playGameSound(game){
         var gameSound = createSound( game.sound ); 
         return gameSound.play();
     }
 
+    //todo: Alterado - Função com responsabilidade especifica
     //! Função para atualizar a cor de fundo
     function updateBackgroundColor(color){
         $body.stop().animate({
@@ -124,6 +129,7 @@ $(function() {
         }, 1000);  
     }
 
+    //todo: Alterado - Função com responsabilidade especifica
     //! Função para atualizar a cor do cabeçalho
     function updateHeaderColor(color) {
         $header.stop().animate({ 
@@ -131,6 +137,7 @@ $(function() {
     }, 1000);
 }
 
+    //todo: Alterado - Função com responsabilidade especifica
     //! Função para atualizar a imagem do jogo
     function updatePicture(game){
         $picture.attr( 'src', game.img ) 
@@ -140,6 +147,7 @@ $(function() {
     });
 }
 
+    //todo: Alterado - Função com responsabilidade especifica
     //! Função para construir os modelos das letras
     function BuildTemplateLettering(game){
         var modelLetters = game.split( '' ); 
@@ -154,6 +162,8 @@ $(function() {
         $models.width( letterWidth * $models.find( 'li' ).length );
     }
 
+
+    //todo: Alterado - Função com responsabilidade especifica
      //! Função para construir as letras embaralhadas
      function BuildScrambledLetters(modelLetters){
         var letterWidth = $models.find( 'li' ).outerWidth( true );
@@ -190,6 +200,7 @@ $(function() {
 
 //------------------------------------------------------------------------
 
+    //todo: Alterado - Função com responsabilidade especifica
     //! Função para tornar as letras droppable (soltáveis)
     function BuildDropdownLetters(score, modelLetters){
         // seleciona todos os elementos 'li.draggable' os torna arrastaveis.
@@ -216,7 +227,8 @@ $(function() {
                 top:     $( this ).position().top,
                 left:     $( this ).position().left 
                 // remove e desabilidade a funcionalidade de arrastar o elemento
-            } ).removeClass( 'draggable' ).draggable( 'option', 'disabled', true ).css({
+            } ).removeClass( 'draggable' ).draggable( 'option', 'disabled', true ).css({  
+                //todo: INCLUIDO - Em caso de acerto a letra fica 'Verde'
                 boxShadow: '0px 0px 10px 5px rgba(0,0,0,0.7)', 
                 textShadow: '4px 4px 8px rgba(255,255,255,0.7)',
                 background: 'hsl(120, 100%, 50%)', 
@@ -232,6 +244,7 @@ $(function() {
             }    
         } else {
 
+            //todo: INCLUIDO - Em caso de erro a letra fica 'Vermelha'
             ui.draggable.css({
                 background:'red'
 
@@ -251,6 +264,7 @@ $(function() {
 }
 
 // --------------------------------------------------------------------------------
+
 
     //! Quando o jogador ganhar o jogo
     function winGame() { 
@@ -278,7 +292,8 @@ $(function() {
         }, 3000);
     }
 
-// Vinculando o botão de reinício ao evento de clique
+//todo: INCLUIDO - Botão de 'Reset'
+//! Vinculando o botão de reinício ao evento de clique
 $('#reset').click(function() {
     refreshGame(); // Limpa as alterações da página
     buildGame(idx); // Reconstrói o jogo atual
