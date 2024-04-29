@@ -3,10 +3,22 @@ buzz.defaults.formats = ['ogg', 'mp3'];
 buzz.defaults.preload = 'metadata'; 
 
 
-// Função para criar instâncias de som 
-//todo: alterado para ser reutilizavel
-function createSound(src) {
-    return new buzz.sound(src); 
+// // Função para criar instâncias de som 
+// todo: alterado para ser reutilizavel
+// function createSound(src) {
+//     return new buzz.sound(src); 
+// }
+
+// todo: Bella
+// Função para criar instâncias de som com verificação de erro***
+function createSound(src, onError = () => console.warn(`Failed to load sound: ${src}`)) {
+    const sound = new buzz.sound(src, {
+        formats: ['mp3', 'ogg'], // Especificar os formatos esperados
+        preload: true, // Pré-carregar os arquivos para reprodução mais rápida
+        autoload: true, // Carregar automaticamente
+        error: onError  // Tratamento de erro personalizado
+    });
+    return sound;
 }
 
 // Sons associados a cada letra do alfabeto
@@ -15,19 +27,80 @@ const alphabetSounds = {};
 // Letras do alfabeto
 const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
-// Associar sons a cada letra do alfabeto
+// //  Associar sons a cada letra do alfabeto
+// alphabet.forEach(letter => {
+//     alphabetSounds[letter] = createSound(`sounds/kid/${letter}`);
+// });
+
+// todo: Bella
+// Associar sons a cada letra do alfabeto*** 
 alphabet.forEach(letter => {
-    alphabetSounds[letter] = createSound(`sounds/kid/${letter}`);
+    const soundPath = `sounds/kid/${letter}`;
+    // Verificação opcional de existência do arquivo antes de criar o som pode ser adicionada aqui
+    alphabetSounds[letter] = createSound(soundPath);
 });
 
-// Instâncias de som para vitória e erro
-const winSound = createSound('sounds/win');
-const errorSound = createSound('sounds/error');
+// todo: Bella
+// Usando o objeto alphabetSounds de forma assíncrona após carregamento***
+function playSoundByLetter(letter) {
+    if (alphabetSounds[letter]) {
+        alphabetSounds[letter].play().catch(error => {
+            console.error("Error playing the sound:", error);
+        });
+    } else {
+        console.log("No sound associated with this letter.");
+    }
+}
+
+
+// todo: Bella
+// Função para criar instâncias de som com verificação de disponibilidade e erro***
+function createSound(src, callback) {
+    if (!buzz.isSupported()) {
+        console.error("Buzz library is not supported in this browser.");
+        return null;  // Retorna null se o Buzz não for suportado
+    }
+
+    const sound = new buzz.sound(src, {
+        formats: ['mp3', 'ogg'],
+        preload: true,
+        autoload: true,
+        error: function () {
+            console.error("Failed to load sound:", src);
+            callback && callback(new Error("Failed to load sound"));
+        }
+    });
+    return sound;
+}
+
+// // Instâncias de som para vitória e erro
+// const winSound = createSound('sounds/win');
+// const errorSound = createSound('sounds/error');
+
+// todo: Bella
+// Instâncias de som para vitória e erro com callbacks para tratar erros***
+const winSound = createSound('sounds/win', (error) => {
+    if (error) {
+        $('#warning').text('Failed to load win sound').show();
+    }
+});
+const errorSound = createSound('sounds/error', (error) => {
+    if (error) {
+        $('#warning').text('Failed to load error sound').show();
+    }
+});
+
 
 $(function() {
-    // Verifica se a biblioteca 'Buzz' é suportada pelo navegador
+    // // Verifica se a biblioteca 'Buzz' é suportada pelo navegador
+    // if (!buzz.isSupported()) {
+    //     $('#warning').show(); // Exibe o elemento com id='warning'
+    // }
+
+    // todo: Bella
+    // Exibe um aviso se a biblioteca Buzz não é suportada, independente de tentar carregar sons***
     if (!buzz.isSupported()) {
-        $('#warning').show(); // Exibe o elemento com id='warning'
+        $('#warning').text('Buzz library is not supported in this browser.').show();
     }
 
     // idx ainda precisa ser definido para o restante do código
