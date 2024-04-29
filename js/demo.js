@@ -113,7 +113,7 @@ $(function() {
         $letters    = $( '#letters' ),
         $body       = $( 'body' ),
         $next       = $( '#next' ),
-        $previus    = $( '#previous' ),
+        $previous    = $( '#previous' ),
         $level      = $('#level')
         $header     = $('#header')
 
@@ -131,7 +131,7 @@ $(function() {
     });
 
     //* Atualiza o jogo e retrocede para o índice anterior
-    $previus.click( function() {
+    $previous.click( function() {
        refreshGame();
        buildGame( --idx ); 
        return false;
